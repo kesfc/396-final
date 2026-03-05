@@ -8,7 +8,7 @@ We evaluate language models under different **step-by-step reasoning conditions*
 
 ## Team Members
 
-- (Add names here)
+Weihao Li, Shijie Chen, Katie Shao,	Yunfei Ge,	Di Hu
 
 ---
 
