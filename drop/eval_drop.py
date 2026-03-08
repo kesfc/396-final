@@ -211,9 +211,18 @@ def _extract_gold_answers(ex: Dict[str, Any]) -> List[str]:
         if out:
             return out
 
-    # (A) Some versions: "answers_spans"
+    # (A) HuggingFace ucinlp/drop: answers_spans = {"spans": ["ans1", ...]}
     if "answers_spans" in ex:
         v = ex["answers_spans"]
+        if isinstance(v, dict) and "spans" in v:
+            spans = v["spans"]
+            try:
+                out = _nonempty_str_list(list(spans)) if spans is not None else []
+            except (TypeError, ValueError):
+                s = str(spans).strip()
+                out = [s] if s else []
+            if out:
+                return out
         if isinstance(v, list):
             out = _nonempty_str_list(v)
             if out:
@@ -256,10 +265,11 @@ def _extract_gold_answers(ex: Dict[str, Any]) -> List[str]:
 def load_drop(split: str) -> List[Dict[str, Any]]:
     """
     DROP doesn't have public test labels in the original leaderboard setting;
-    HF commonly provides train/validation.
+    HF commonly provides train/validation. Use ucinlp/drop for correct schema
+    (answers_spans.spans).
     """
     from datasets import load_dataset
-    ds = load_dataset("drop", split=split)
+    ds = load_dataset("ucinlp/drop", split=split)
     return [dict(x) for x in ds]
 
 
