@@ -299,14 +299,15 @@ def model_tag(model_name: str) -> str:
 # CLI
 # -----------------------------
 @click.command()
+# Model list: Qwen/Qwen2.5-1.5B-Instruct, Qwen/Qwen2.5-7B-Instruct, Qwen/Qwen2.5-14B-Instruct, meta-llama/Llama-3.2-1B-Instruct, meta-llama/Llama-3.2-3B-Instruct, meta-llama/Llama-3.2-7B-Instruct
 @click.option("--model", "model_name", default="Qwen/Qwen2.5-1.5B-Instruct", show_default=True, type=str)
 @click.option("--split", default="test", show_default=True, type=click.Choice(["train", "test"], case_sensitive=False))
-@click.option("--prompt-level", default=2, show_default=True, type=click.IntRange(0, 4), help="Prompt length level 0..4")
+@click.option("--prompt-level", default=3, show_default=True, type=click.IntRange(0, 4), help="Prompt length level 0..4")
 @click.option("--results-dir", default="results/gsm8k_promptlen", show_default=True, type=click.Path(file_okay=False, path_type=Path))
-@click.option("--max-samples", default=None, type=int, help="Run only first N examples (after shuffle).")
+@click.option("--max-samples", default=100, type=int, help="Run only first N examples (after shuffle).")
 @click.option("--seed", default=42, show_default=True, type=int)
 @click.option("--shuffle/--no-shuffle", default=True, show_default=True)
-@click.option("--device", default="auto", show_default=True, type=str, help="auto|cuda|cpu|cuda:0 ...")
+@click.option("--device", default="cuda", show_default=True, type=str, help="auto|cuda|cpu|cuda:0 ...")
 @click.option("--dtype", default="bfloat16", show_default=True,
               type=click.Choice(["float16", "bfloat16", "float32"], case_sensitive=False))
 @click.option("--temperature", default=0.0, show_default=True, type=float)
@@ -333,10 +334,8 @@ def main(
 
     results_dir.mkdir(parents=True, exist_ok=True)
 
-    out_path = results_dir / f"{model_tag(model_name)}_p{prompt_level}_{split}"
-    if max_samples is not None:
-        out_path = out_path.with_name(out_path.name + f"_n{max_samples}")
-    out_path = out_path.with_suffix(".jsonl")
+    out_name = f"{model_tag(model_name)}_prompt_level_{prompt_level}"
+    out_path = results_dir / f"{out_name}.jsonl"
 
     click.echo(f"[cfg] model={model_name}")
     click.echo(f"[cfg] split={split} prompt_level={prompt_level}")
@@ -403,6 +402,13 @@ def main(
     total = time.time() - t0
     click.echo(f"[done] n={len(idxs)} acc={correct_cnt/len(idxs):.4f} time={total:.1f}s -> {out_path}")
 
-
 if __name__ == "__main__":
-    main()
+    import sys
+
+    try:
+        # notebook / colab
+        get_ipython  # noqa: F821
+        main(args=[], standalone_mode=False)
+    except NameError:
+        # normal terminal
+        main()
