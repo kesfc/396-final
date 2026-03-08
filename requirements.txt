@@ -1,0 +1,8 @@
+# For run_large_inference.py, gsm8k/eval_gsm8k_step.py, drop/eval_drop.py
+# Python 3.8+
+
+torch>=2.0
+transformers>=4.36
+datasets>=2.14
+accelerate>=0.25
+click>=8.0
