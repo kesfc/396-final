@@ -302,7 +302,7 @@ def model_tag(model_name: str) -> str:
 # Model list: Qwen/Qwen2.5-1.5B-Instruct, Qwen/Qwen2.5-7B-Instruct, Qwen/Qwen2.5-14B-Instruct, meta-llama/Llama-3.2-1B-Instruct, meta-llama/Llama-3.2-3B-Instruct, meta-llama/Llama-3.2-7B-Instruct
 @click.option("--model", "model_name", default="Qwen/Qwen2.5-1.5B-Instruct", show_default=True, type=str)
 @click.option("--split", default="test", show_default=True, type=click.Choice(["train", "test"], case_sensitive=False))
-@click.option("--prompt-level", default=3, show_default=True, type=click.IntRange(0, 4), help="Prompt length level 0..4")
+@click.option("--prompt-level", default=4, show_default=True, type=click.IntRange(0, 4), help="Prompt length level 0..4")
 @click.option("--results-dir", default="results/gsm8k_promptlen", show_default=True, type=click.Path(file_okay=False, path_type=Path))
 @click.option("--max-samples", default=100, type=int, help="Run only first N examples (after shuffle).")
 @click.option("--seed", default=42, show_default=True, type=int)
